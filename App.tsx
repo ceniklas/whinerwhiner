@@ -1,22 +1,24 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      
-      <Text>Nisse? Vem är Nisse?</Text>
-      
-      <View style={styles.redBox}></View>
-      
-      <View style={styles.buttonWrapper}>
-        <Text>
-          Spin!
-        </Text>
+export class App extends Component<{}, {}> {
+  render() {
+    return (
+      <View style={styles.container}>
+
+        <Text>Nisse? Vem är Nisse?</Text>
+
+        <View style={styles.redBox}></View>
+
+        <View style={styles.buttonWrapper}>
+          <Text>
+            Spin!
+          </Text>
+        </View>
+
       </View>
-      
-    </View>
-  );
+    );
+  }
 }
 
 const styles = StyleSheet.create({
