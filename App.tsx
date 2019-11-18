@@ -1,9 +1,15 @@
 import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Animated, Easing, } from 'react-native';
+import * as Font from 'expo-font';
 
 export default class App extends Component<{}, {}> {
   spinValue;
   spinAnimation;
+
+  state = {
+    fontLoaded: false,
+  };
+  
   componentWillMount = () => {
     this.spinValue = new Animated.Value(0);
     this.spinAnimation = this.spinValue.interpolate({
@@ -11,29 +17,42 @@ export default class App extends Component<{}, {}> {
       outputRange: ['0deg', '360deg']
     });
   }
+
+  componentDidMount = async () => {
+    await Font.loadAsync({
+      'source-sans-pro-bold': require('./assets/fonts/SourceSansPro-Bold.ttf'),
+    });
+
+    this.setState({ fontLoaded: true });
+  }
+
   spinMe = () => {
     this.spinValue.setValue(0)
     Animated.timing(
       this.spinValue,
       {
-        toValue: 3,
+        toValue: 1,
         duration: 2000,
         easing: Easing.inOut(Easing.exp),
       }
-
-    )
-      .start()
-
+    ).start()
   }
+
   onPressButton = () => {
     this.spinMe()
-
   }
+
   render() {
     return (
       <View style={WhinerWhinerStylesheet.container}>
-
-        <Text>Nisse? Vem är Nisse??</Text>
+        
+        {
+          this.state.fontLoaded ? (
+          <Text style={{ fontFamily: 'source-sans-pro-bold', fontSize: 56 }}>
+            Nisse? Vem är Nisse??
+          </Text>
+          ) : null
+        }
 
         <Animated.View style={[
           WhinerWhinerStylesheet.redBox,
