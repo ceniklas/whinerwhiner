@@ -1,6 +1,8 @@
+import { StyleSheet, Text, View, TouchableOpacity, Animated, Easing, ImageBackground, } from 'react-native';
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Animated, Easing, } from 'react-native';
 import * as Font from 'expo-font';
+
+import PrimaryButton from './src/components/PrimaryButton';
 
 export default class App extends Component<{}, {}> {
   spinValue;
@@ -42,31 +44,53 @@ export default class App extends Component<{}, {}> {
     this.spinMe()
   }
 
-  render() {
+  renderWheel = () => {
+    const persons = [
+      {id: 0, name: 'Robin Bajsberg', rot: 0},
+      {id: 1, name: 'Thom Båmbadill', rot: 0},
+      {id: 2, name: 'Carrusellmanon', rot: 0},
+      {id: 3, name: 'Nisse Pisse Ko', rot: 0},
+      {id: 4, name: 'Bo', rot: 0},
+      {id: 5, name: 'Lill-Erik', rot: 0},
+    ];
+
+    persons.forEach((p, idx) => {
+      p.rot = (360/persons.length)*idx;
+      const l = 75;
+      p.name = p.name + new Array(l - p.name.length).join(' ')
+    });
+
     return (
-      <View style={WhinerWhinerStylesheet.container}>
+      <Animated.View style={[WhinerWhinerStylesheet.spinWheel,{ transform: [{ rotate: this.spinAnimation }] }]}>
+        {persons.map(p => 
+        <View key={p.id} style={{position:'absolute', transform: [{ rotate: `${p.rot}deg` }]}}>
+          <Text style={[WhinerWhinerStylesheet.textStyle]}>{p.name}</Text>
+        </View>)}
+      </Animated.View>
+    );
+  }
+
+  render() {
+    return this.state.fontLoaded ? (
+      <ImageBackground source={require('./assets/background.png')} style={WhinerWhinerStylesheet.container}>
         
-        {
+        {/* {
           this.state.fontLoaded ? (
           <Text style={{ fontFamily: 'source-sans-pro-bold', fontSize: 56 }}>
             Nisse? Vem är Nisse??
           </Text>
           ) : null
-        }
+        } */}
 
-        <Animated.View style={[
-          WhinerWhinerStylesheet.redBox,
-          { transform: [{ rotate: this.spinAnimation }] }
-        ]}>
+        {this.renderWheel()}
 
-        </Animated.View>
-
+        <PrimaryButton style={{}}>Spin</PrimaryButton>
         <TouchableOpacity style={WhinerWhinerStylesheet.primaryButton} onPress={this.onPressButton}>
           <Text>Spin!</Text>
         </TouchableOpacity>
-
-      </View>
-    );
+        
+      </ImageBackground>
+    ) : null;
   }
 }
 
@@ -75,16 +99,27 @@ const WhinerWhinerStylesheet = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'space-evenly',
+    // justifyContent: 'space-evenly',
   },
   primaryButton: {
+    position: 'absolute',
+    bottom: 60,
     paddingVertical: 16,
     paddingHorizontal: 24,
-    backgroundColor: 'cyan',
   },
-  redBox: {
-    height: 150,
-    width: 150,
-    backgroundColor: 'red',
+  spinWheel: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 100,
+    height: 400,
+    width: 400,
+    borderRadius: 400,
+    borderWidth: 2,
+    borderColor: '#8545D3',
+  },
+  textStyle: {
+    fontSize: 18,
+    color: '#fff',
+    fontFamily: 'source-sans-pro-bold',
   },
 });
