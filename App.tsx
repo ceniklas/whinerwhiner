@@ -1,16 +1,71 @@
-import { StyleSheet, Text, View, TouchableOpacity, Animated, Easing, ImageBackground, } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Animated, Easing, ImageBackground, AppRegistry, } from 'react-native';
 import React, { Component, useState } from 'react';
 import * as Font from 'expo-font';
+import { LinearGradient } from 'expo-linear-gradient';
+import { gql } from '@apollo/client';
+import { ApolloProvider, useSubscription } from '@apollo/react-hooks';
+import ApolloClient from 'apollo-client';
+import { WebSocketLink } from 'apollo-link-ws';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import PrimaryButton from './src/components/common/PrimaryButton';
-import { LinearGradient } from 'expo-linear-gradient';
 import SpinWheel from './src/components/SpinWheel';
+import DefaultText from './src/components/common/DefaultText';
+
+
+const cache = new InMemoryCache();
+const link = new WebSocketLink({
+  uri: 'ws://localhost:4466/',
+});
+const client = new ApolloClient({link, cache});
+
+const gqlQuery = gql`  
+subscription {
+  tweet{
+    mutation
+    node{
+      text
+    }
+  }
+}
+`
+
 
 export default class App extends Component<{}, {}> {
   
   state = {
     fontLoaded: false,
+    tweets: [],
   };
+  
+  TestComp = () => {
+    const { data, error, loading } = useSubscription(gqlQuery)
+    console.log(data, error, loading);
+    return (
+    <DefaultText>{data ? data.tweet.node.text : null}</DefaultText>
+    )
+  }
+
+  componentWillMount = () => {
+    // client.subscribe({})
+
+    
+    // client.subscribe({query: gqlQuery}).map(x => console.log('fjdkfgd', x))
+
+    client.query({
+      query: gql`
+        query {
+          tweets {
+            text
+            author {
+              name
+            }
+          }
+        }
+      `
+    })
+    .then(result => this.setState({tweets: result.data.tweets}))
+  }
 
   componentDidMount = async () => {
     await this.loadFonts();
@@ -25,20 +80,33 @@ export default class App extends Component<{}, {}> {
   }
 
   spinWheel = () => {}
+  
 
   render() {
+    
+
     return this.state.fontLoaded ? (
-      <LinearGradient colors={['#2A126C', '#140A40']} style={WhinerWhinerStylesheet.container}>
+      <ApolloProvider client={client}>
+        <LinearGradient colors={['#2A126C', '#140A40']} style={WhinerWhinerStylesheet.container}>
 
-        {/* <ImageBackground source={require('./assets/background.png')} style={WhinerWhinerStylesheet.container}> */}
-          
-          {/* <SpinWheel spinWheel={this.spinWheel}/> */}
+          <this.TestComp></this.TestComp>
 
-          <PrimaryButton onPress={this.spinWheel}>Spin</PrimaryButton>
+          {/* <ImageBackground source={require('./assets/background.png')} style={WhinerWhinerStylesheet.container}> */}
+            
+            {/* <SpinWheel spinWheel={this.spinWheel}/> */}
+
+            <PrimaryButton onPress={this.spinWheel}>Spin</PrimaryButton>
+
+            {this.state.tweets.map((tweet, idx) => (
+              <DefaultText key={idx}>
+                {tweet.text} - {tweet.author.name}
+              </DefaultText>
+            ))}
+            
+          {/* </ImageBackground> */}
           
-        {/* </ImageBackground> */}
-        
-      </LinearGradient>
+        </LinearGradient>
+      </ApolloProvider>
     ) : null;
   }
 }
@@ -50,3 +118,5 @@ const WhinerWhinerStylesheet = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
 });
+
+AppRegistry.registerComponent('MyApplication', () => App);
