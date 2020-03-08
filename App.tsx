@@ -3,24 +3,31 @@ import React, { Component, useState } from 'react'
 import * as Font from 'expo-font'
 import { LinearGradient } from 'expo-linear-gradient'
 
-import { gql, getMainDefinition } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { ApolloProvider } from '@apollo/react-hooks'
 import ApolloClient from 'apollo-client'
 import { WebSocketLink } from 'apollo-link-ws'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloLink } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
+import { getMainDefinition } from 'apollo-utilities'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 
 import PrimaryButton from './src/components/common/PrimaryButton'
 import SpinWheel from './src/components/SpinWheel'
 import DefaultText from './src/components/common/DefaultText'
+import { Tweet } from './db-prismainit/generated/prisma-client'
 
-const websocketURL = 'ws://10.10.12.135:4466/'
-const httpURL = 'http://10.10.12.135:4466/'
+const websocketURL = 'ws://10.10.12.183:4466/'
+const httpURL = 'http://10.10.12.183:4466/'
 const cache = new InMemoryCache()
 
-const subsctiptionClient = new SubscriptionClient(websocketURL)
+const subsctiptionClient = new SubscriptionClient(
+  websocketURL, 
+  {
+    reconnect: true,
+  }
+)
 
 const wsLink = new WebSocketLink(subsctiptionClient)
 const httpLink = new HttpLink({ uri: httpURL })
@@ -36,7 +43,7 @@ const link = ApolloLink.split(
 
 const client = new ApolloClient({ link, cache })
 
-const gqlQuery = gql`  
+const gqlQuery = gql`
   subscription {
     tweet{
       mutation
@@ -62,9 +69,32 @@ export default class App extends Component<{}, {}> {
     </>)
   }
 
-  componentWillMount = () => {
-    subsctiptionClient.onDisconnected(() => this.setState({ online: false }))
-    subsctiptionClient.onConnected(() => this.setState({ online: true }))
+  constructor(base: Readonly<{}>) {
+    super(base);
+
+    subsctiptionClient.onDisconnected(() => {
+      console.log('Disconnected')
+      this.setState({ online: false })
+      
+    })
+    subsctiptionClient.onConnected(() => {
+      console.log('Connected')
+      this.setState({ online: true })
+    })
+    subsctiptionClient.onConnecting(() => {
+      console.log('Connecting...')
+    })
+    subsctiptionClient.onReconnecting(() => {
+      console.log('Reconnecting...')
+    })
+    subsctiptionClient.onReconnected(() => {
+      console.log('Reconnected')
+      this.setState({ online: true })
+    })
+    subsctiptionClient.onError(e => {
+      console.log('Error:', e)
+    })
+    
 
     client.query({
       query: gql`
