@@ -1,0 +1,11 @@
+npm install -g expo-cli prisma
+
+cd db-prismainit
+
+docker-compose up -d
+prisma deploy
+
+cd ..
+
+npm install
+npm run start
