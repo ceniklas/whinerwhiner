@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Text, StyleSheet, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, ViewStyle, StyleProp, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import DefaultText from './DefaultText';
 
@@ -7,13 +7,15 @@ export default class PrimaryButton extends PureComponent<{style?: StyleProp<View
   render() {
     // #D32B79  -> #B91559
     return (
-      <TouchableOpacity onPress={this.props.onPress}>
-        <LinearGradient colors={['#D32B79', '#B91559']} style={[styles.primaryStyle, this.props.style]}>    
-          <DefaultText style={styles.buttonTextStyle}>
-            {this.props.children}
-          </DefaultText>
-        </LinearGradient>
-      </TouchableOpacity>
+      <View style={{flexDirection: 'row'}}>
+        <TouchableOpacity onPress={this.props.onPress}>
+          <LinearGradient colors={['#D32B79', '#B91559']} style={[styles.primaryStyle, this.props.style]}>    
+            <DefaultText style={styles.buttonTextStyle}>
+              {this.props.children}
+            </DefaultText>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     );
   }
 }

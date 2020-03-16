@@ -17,13 +17,14 @@ import PrimaryButton from './src/components/common/PrimaryButton'
 import SpinWheel from './src/components/SpinWheel'
 import DefaultText from './src/components/common/DefaultText'
 import { Tweet } from './db-prismainit/generated/prisma-client'
+import ChatView from './src/components/ChatView'
 
-const websocketURL = 'ws://10.10.12.183:4466/'
-const httpURL = 'http://10.10.12.183:4466/'
+const websocketURL = 'ws://192.168.1.34:4466/'
+const httpURL = 'http://192.168.1.34:4466/'
 const cache = new InMemoryCache()
 
 const subsctiptionClient = new SubscriptionClient(
-  websocketURL, 
+  websocketURL,
   {
     reconnect: true,
   }
@@ -58,8 +59,8 @@ export default class App extends Component<{}, {}> {
   state = {
     online: false,
     fontLoaded: false,
-    tweets: [],
-    latestUpdate: {} as any
+    tweets: [] as any[],
+    latestUpdate: { node: {} as any },
   }
 
   TestComp = () => {
@@ -75,7 +76,6 @@ export default class App extends Component<{}, {}> {
     subsctiptionClient.onDisconnected(() => {
       console.log('Disconnected')
       this.setState({ online: false })
-      
     })
     subsctiptionClient.onConnected(() => {
       console.log('Connected')
@@ -94,7 +94,7 @@ export default class App extends Component<{}, {}> {
     subsctiptionClient.onError(e => {
       console.log('Error:', e)
     })
-    
+
 
     client.query({
       query: gql`
@@ -110,7 +110,7 @@ export default class App extends Component<{}, {}> {
     }).then(result => this.setState({ tweets: result.data.tweets }))
 
     client.subscribe({ query: gqlQuery })
-    .subscribe(data => this.setState({latestUpdate: data.data.tweet}))
+      .subscribe(data => this.setState({ latestUpdate: data.data.tweet }))
   }
 
   componentDidMount = async () => {
@@ -145,6 +145,8 @@ export default class App extends Component<{}, {}> {
               {tweet.text} - {tweet.author.name}
             </DefaultText>
           ))}
+
+          <ChatView></ChatView>
 
           {/* </ImageBackground> */}
 

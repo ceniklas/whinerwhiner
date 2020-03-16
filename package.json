@@ -30,8 +30,10 @@
   "devDependencies": {
     "@types/react": "^16.9.0",
     "@types/react-native": "^0.60.15",
+    "@types/react-redux": "^7.1.7",
     "babel-preset-expo": "^8.0.0",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.2",
+    "tslint": "^6.0.0"
   },
   "private": true
 }
