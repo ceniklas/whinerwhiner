@@ -1,24 +1,33 @@
 import React, { Component } from 'react'
 import { View, Text } from 'react-native'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from '@apollo/client'
 
-export class ChatView extends Component {
-	render() {
-		return (
-			<View>
-				<Text> prop </Text>
-			</View>
-		)
-	}
+const query = gql`
+      query {
+        tweets {
+          text
+          author {
+            name
+          }
+        }
+      }
+    `
+
+const ChatView = () => {
+    const {
+        data,
+        loading,
+        error,
+    } = useQuery<any>(query);
+
+    return (
+
+        <View>
+            <Text>{{ data }} prop </Text>
+        </View>
+    )
+
 }
 
-const mapStateToProps = (state) => ({
-
-})
-
-const mapDispatchToProps = {
-
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ChatView)
+export default ChatView
