@@ -19,8 +19,8 @@ import DefaultText from './src/components/common/DefaultText'
 import { Tweet } from './db-prismainit/generated/prisma-client'
 import ChatView from './src/components/ChatView'
 
-const websocketURL = 'ws://10.10.12.183:4466/'
-const httpURL = 'http://10.10.12.183:4466/'
+const websocketURL = 'ws://192.168.42.69:4466/'
+const httpURL = 'http://192.168.42.69:4466/'
 const cache = new InMemoryCache()
 
 const subsctiptionClient = new SubscriptionClient(
@@ -146,7 +146,7 @@ export default class App extends Component<{}, {}> {
             </DefaultText>
           ))}
 
-          <ChatView></ChatView>
+          {/* <ChatView></ChatView> */}
 
           {/* </ImageBackground> */}
 
