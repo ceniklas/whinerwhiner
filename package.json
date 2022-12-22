@@ -34,7 +34,7 @@
     "babel-preset-expo": "^8.2.1",
     "tslint": "^6.1.2",
     "typescript": "^3.9.3",
-    "prisma": "^1.34.10"
+    "prisma": "^1.34.12"
   },
   "private": true
 }
